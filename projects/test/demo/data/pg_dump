@@ -1,0 +1,62 @@
+ pg_dump steps
+
+Monday, November 11, 2019
+6:12 PM
+
+logical backup pg_dump from one cluster to another cluster
+=================================================
+
+start cluster the target cluster
+===============================================
+ps -ef | grep postgres
+pg_ctl -D /var/lib/pgsql/10/data1 start
+
+set the environment
+=============================================
+cd /var/lib/pgsql/10
+
+create physical directory
+---------------------------
+mkdir -p /var/lib/pgsql/10/tbs/dvdrental3_tbs
+
+create logical directory
+--------------------------
+psql -p 5444
+
+create tablespace dvdrental3_tbs location '/var/lib/pgsql/10/tbs/dvdrental3_tbs';
+
+create database
+---------------------
+create database dvdrental3 tablespace dvdrental3_tbs;
+
+postgres=# \db+
+postgres=# \l+
+
+on os run pg_dump utility and export the file
+---------------------------------------------
+\q
+cd
+postgres@HOSTNAME:/home/postgres  >>>>>>>>> we should be in home directory
+pg_dump -U postgres -p 5432 dvdrental > dvdrental3.sql
+
+make sure the dump file is created 
+---------------------------------
+ll
+
+make it executable
+-----------------
+chmod 775 dvdrental3.sql
+ 
+
+
+import the dump file 
+----------------------
+psql -U postgres -p 5444 dvdrental3 < dvdrental3.sql
+
+==>psql -p 5444
+postgres=# \c dvdrental3
+dvdrental3=# \dt
+
+		
+==========================================================================================================================================================
+
